@@ -75,33 +75,71 @@ inTrain <- createDataPartition(trainData$classe, p=0.70, list=F)
 trainSet <- trainData[inTrain, ]
 testSet <- trainData[-inTrain, ]
 ```
-
-** Train Models**
-```{r train_models} - commented out to conserve complie time and use cache
-modFitRpart <-  train(classe ~ ., data=trainSet, method="rpart")
+ 
+##** Train Models**  - using cache
+##```{r train_models} - commented out to conserve complie time and use cache
+##modFitRpart <-  train(classe ~ ., data=trainSet, method="rpart")
 
 #Train Random Forest Tree
-modFitRF <- train(classe ~ ., data=trainSet, method="rf")
-```
+##modFitRF <- train(classe ~ ., data=trainSet, method="rf")
+##```
 
 *Conclusion*
 
 As we can see looking at Figures 1 & 2, the Random Forrest Model is much more accurate at 98.8% so we will us it for our predictions.
 
-**Print the Prediction**
-```{print_model}
-predictRF <- predict(modFitRF, testData)
-predictRF
+**Print the Prediction** - trouble with knitr
+##```{r print_model}
+##predictRF <- predict(modFitRF, testData)
+##predictRF
 ```
+ [1] B A B A A E D B A A B C B A E E A B B B
+Levels: A B C D E
 
-*Appendix Figures*
+*Appendix Figures* - had trouble getting this to Knit
 
 1. Decision Tree Accuracy
-```{r print_decision_tree_ccurracy}
-print(modFitRpart)
-```
+##```{r print_decision_tree_ccurracy}
+## print(modFitRpart)
+##```
+CART 
+
+13737 samples
+   52 predictor
+    5 classes: 'A', 'B', 'C', 'D', 'E' 
+
+No pre-processing
+Resampling: Bootstrapped (25 reps) 
+Summary of sample sizes: 13737, 13737, 13737, 13737, 13737, 13737, ... 
+Resampling results across tuning parameters:
+
+  cp          Accuracy   Kappa       Accuracy SD  Kappa SD  
+  0.03692402  0.5057065  0.35538263  0.01743791   0.02474377
+  0.06092971  0.4226270  0.22029583  0.06655101   0.11003574
+  0.11636660  0.3257138  0.06415962  0.04117566   0.06294724
+
+Accuracy was used to select the optimal model using  the largest value.
+The final value used for the model was cp = 0.03692402. 
 
 2. Random Forest Accuracy
-```{r print_random_forest_accuracy}
-print(modFitRF)
-```
+##```{r print_random_forest_accuracy}
+## print(modFitRF)
+##```
+Random Forest 
+
+13737 samples
+   52 predictor
+    5 classes: 'A', 'B', 'C', 'D', 'E' 
+
+No pre-processing
+Resampling: Bootstrapped (25 reps) 
+Summary of sample sizes: 13737, 13737, 13737, 13737, 13737, 13737, ... 
+Resampling results across tuning parameters:
+
+  mtry  Accuracy   Kappa      Accuracy SD  Kappa SD   
+   2    0.9883324  0.9852391  0.001306906  0.001656752
+  27    0.9876373  0.9843607  0.001748962  0.002213104
+  52    0.9742739  0.9674545  0.004345247  0.005501173
+
+Accuracy was used to select the optimal model using  the largest value.
+The final value used for the model was mtry = 2. 

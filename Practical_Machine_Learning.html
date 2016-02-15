@@ -70,28 +70,92 @@ img {
 <p>The test data are available here:</p>
 <p><a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv" class="uri">https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv</a></p>
 <p>The data for this project come from this source: <a href="http://groupware.les.inf.puc-rio.br/har" class="uri">http://groupware.les.inf.puc-rio.br/har</a>. If you use the document you create for this class for any purpose please cite them as they have been very generous in allowing their data to be used for this kind of assignment.</p>
-<p>** Load libraries** <code>{r load_libraries} library(caret) library(randomForest) library(e1071) library(rattle) library(knitr)</code></p>
-<p><strong>Download data files</strong> ```{r download_data_files} trainFile &lt;- “<a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv" class="uri">https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv</a>” trainFileName &lt;- “trainingdata.csv”</p>
-<p>testFile &lt;- “<a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv" class="uri">https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv</a>” testFileName &lt;- “testdata.csv”</p>
-<p>download.file(trainFile, destfile=trainFileName) download.file(testFile, destfile=testFileName) ```</p>
-<p>** Read data sets into data frames** <code>{r read_data_sets} trainData &lt;- read.csv(&quot;trainingdata.csv&quot;) testData &lt;- read.csv(&quot;testdata.csv&quot;)</code></p>
-<p><strong>Remove NAs</strong> <code>{r remove_NA} trainData &lt;- trainData[, colSums(is.na(trainData)) == 0]  testData &lt;- testData[, colSums(is.na(trainData)) == 0]</code></p>
-<p><strong>Get rid of columns with little effect on accelerometer</strong> ```{r fix_data} classe &lt;- trainData<span class="math">\(classe trainFix &lt;- grepl(&quot;^X|timestamp|window&quot;, names(trainData)) trainData &lt;- trainData[, !trainFix] trainData &lt;- trainData[, sapply(trainData, is.numeric)] trainData\)</span>classe &lt;- classe</p>
-<p>classe &lt;- testData<span class="math">\(classe testFix &lt;- grepl(&quot;^X|timestamp|window&quot;, names(testData)) testData &lt;- testData[, !testFix] testData &lt;- testData[, sapply(testData, is.numeric)] testData\)</span>classe &lt;- classe ```</p>
-<p><strong>Partition TrainData to create a training set and a test set within the training data</strong> <code>{r create_training_sets} set.seed(333) # For reproducibile purpose inTrain &lt;- createDataPartition(trainData$classe, p=0.70, list=F) trainSet &lt;- trainData[inTrain, ] testSet &lt;- trainData[-inTrain, ]</code></p>
-<p>** Train Models** ```{r train_models} modFitRpart &lt;- train(classe ~ ., data=trainSet, method=“rpart”)</p>
-<div id="train-random-forest-tree" class="section level2">
-<h2>Train Random Forest Tree</h2>
-<p>modFitRF &lt;- train(classe ~ ., data=trainSet, method=“rf”) ```</p>
+<p>** Load libraries**</p>
+<pre class="r"><code>library(caret)</code></pre>
+<pre><code>## Loading required package: lattice
+## Loading required package: ggplot2</code></pre>
+<pre class="r"><code>library(randomForest)</code></pre>
+<pre><code>## randomForest 4.6-12
+## Type rfNews() to see new features/changes/bug fixes.
+## 
+## Attaching package: 'randomForest'
+## 
+## The following object is masked from 'package:ggplot2':
+## 
+##     margin</code></pre>
+<pre class="r"><code>library(e1071)
+library(rattle)</code></pre>
+<pre><code>## Rattle: A free graphical interface for data mining with R.
+## Version 4.0.5 Copyright (c) 2006-2015 Togaware Pty Ltd.
+## Type 'rattle()' to shake, rattle, and roll your data.</code></pre>
+<pre class="r"><code>library(knitr)</code></pre>
+<p><strong>Download data files</strong></p>
+<pre class="r"><code>trainFile &lt;- &quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv&quot;
+trainFileName &lt;- &quot;trainingdata.csv&quot;
+
+testFile &lt;- &quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv&quot;
+testFileName &lt;- &quot;testdata.csv&quot;
+
+download.file(trainFile, destfile=trainFileName)
+download.file(testFile, destfile=testFileName)</code></pre>
+<p>** Read data sets into data frames**</p>
+<pre class="r"><code>trainData &lt;- read.csv(&quot;trainingdata.csv&quot;)
+testData &lt;- read.csv(&quot;testdata.csv&quot;)</code></pre>
+<p><strong>Remove NAs</strong></p>
+<pre class="r"><code>trainData &lt;- trainData[, colSums(is.na(trainData)) == 0] 
+testData &lt;- testData[, colSums(is.na(trainData)) == 0] </code></pre>
+<p><strong>Get rid of columns with little effect on accelerometer</strong></p>
+<pre class="r"><code>classe &lt;- trainData$classe
+trainFix &lt;- grepl(&quot;^X|timestamp|window&quot;, names(trainData))
+trainData &lt;- trainData[, !trainFix]
+trainData &lt;- trainData[, sapply(trainData, is.numeric)]
+trainData$classe &lt;- classe
+
+classe &lt;- testData$classe
+testFix &lt;- grepl(&quot;^X|timestamp|window&quot;, names(testData))
+testData &lt;- testData[, !testFix]
+testData &lt;- testData[, sapply(testData, is.numeric)]
+testData$classe &lt;- classe</code></pre>
+<p><strong>Partition TrainData to create a training set and a test set within the training data</strong></p>
+<pre class="r"><code>set.seed(333) # For reproducibile purpose
+inTrain &lt;- createDataPartition(trainData$classe, p=0.70, list=F)
+trainSet &lt;- trainData[inTrain, ]
+testSet &lt;- trainData[-inTrain, ]</code></pre>
+<div id="train-models---using-cache" class="section level2">
+<h2>** Train Models** - using cache</h2>
+</div>
+<div id="r-train_models---commented-out-to-conserve-complie-time-and-use-cache" class="section level2">
+<h2>```{r train_models} - commented out to conserve complie time and use cache</h2>
+</div>
+<div id="modfitrpart---trainclasse-.-datatrainset-methodrpart" class="section level2">
+<h2>modFitRpart &lt;- train(classe ~ ., data=trainSet, method=“rpart”)</h2>
+</div>
+<div id="train-random-forest-tree" class="section level1">
+<h1>Train Random Forest Tree</h1>
+<div id="modfitrf---trainclasse-.-datatrainset-methodrf" class="section level2">
+<h2>modFitRF &lt;- train(classe ~ ., data=trainSet, method=“rf”)</h2>
+</div>
+<div id="section" class="section level2">
+<h2>```</h2>
 <p><em>Conclusion</em></p>
 <p>As we can see looking at Figures 1 &amp; 2, the Random Forrest Model is much more accurate at 98.8% so we will us it for our predictions.</p>
-<p><strong>Print the Prediction</strong></p>
-<pre class="{print_model}"><code>predictRF &lt;- predict(modFitRF, testData)
-predictRF</code></pre>
-<p><em>Appendix Figures</em> 1. Decision Tree Accuracy <code>{r print_decision_ree_ccurracy} print(modFitRpart)</code></p>
-<ol start="2" style="list-style-type: decimal">
-<li>Random Forest Accuracy <code>{r print_random_forest_accuracy} print(modFitRF)</code></li>
+<p><strong>Print the Prediction</strong> ##<code>{r print_model} ##predictRF &lt;- predict(modFitRF, testData) ##predictRF</code> [1] B A B A A E D B A A B C B A E E A B B B Levels: A B C D E</p>
+<p><em>Appendix Figures</em></p>
+<ol style="list-style-type: decimal">
+<li>Decision Tree Accuracy ##<code>{r print_decision_tree_ccurracy} ## print(modFitRpart) ##</code> CART</li>
 </ol>
+<p>13737 samples 52 predictor 5 classes: ‘A’, ‘B’, ‘C’, ‘D’, ‘E’</p>
+<p>No pre-processing Resampling: Bootstrapped (25 reps) Summary of sample sizes: 13737, 13737, 13737, 13737, 13737, 13737, … Resampling results across tuning parameters:</p>
+<p>cp Accuracy Kappa Accuracy SD Kappa SD<br /> 0.03692402 0.5057065 0.35538263 0.01743791 0.02474377 0.06092971 0.4226270 0.22029583 0.06655101 0.11003574 0.11636660 0.3257138 0.06415962 0.04117566 0.06294724</p>
+<p>Accuracy was used to select the optimal model using the largest value. The final value used for the model was cp = 0.03692402.</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Random Forest Accuracy ##<code>{r print_random_forest_accuracy} ## print(modFitRF) ##</code> Random Forest</li>
+</ol>
+<p>13737 samples 52 predictor 5 classes: ‘A’, ‘B’, ‘C’, ‘D’, ‘E’</p>
+<p>No pre-processing Resampling: Bootstrapped (25 reps) Summary of sample sizes: 13737, 13737, 13737, 13737, 13737, 13737, … Resampling results across tuning parameters:</p>
+<p>mtry Accuracy Kappa Accuracy SD Kappa SD<br /> 2 0.9883324 0.9852391 0.001306906 0.001656752 27 0.9876373 0.9843607 0.001748962 0.002213104 52 0.9742739 0.9674545 0.004345247 0.005501173</p>
+<p>Accuracy was used to select the optimal model using the largest value. The final value used for the model was mtry = 2.</p>
+</div>
 </div>
 
 
